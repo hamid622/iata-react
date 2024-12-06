@@ -30,7 +30,7 @@ const SignupForm = () => {
           <div className="flex flex-col md:flex-row gap-5">
             <div className="space-y-2">
               <Label htmlFor="first-name">First Name</Label>
-              <Input id="first-name" placeholder="First Name" />
+              <Input className="" id="first-name" placeholder="First Name" />
             </div>
 
             <div className="space-y-2">
