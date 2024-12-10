@@ -70,3 +70,10 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+@layer components {
+  ::selection {
+    @apply bg-[#c2d0e6];
+  }
+}
