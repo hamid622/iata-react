@@ -32,8 +32,8 @@ const LoginForm = () => {
   });
 
   function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    const { keepmeloggedin, ...restValues } = values;
-    console.log(restValues);
+    const { email, password } = values;
+    console.log({ email, password });
     // form.reset();
   }
 
@@ -48,7 +48,7 @@ const LoginForm = () => {
                 Login to Account
               </h3>
               <p className="mb-4 text-center px-0 sm:px-2 md:px-9 lg:px-14">
-                Only for registered users. If you don't have an account, sign up
+                Only for registered users. If you don&apos;t have an account, sign up
                 to create a new one.
               </p>
 
@@ -144,7 +144,7 @@ const LoginForm = () => {
                     <Link href="/">Back to Homepage</Link>
                   </Button>
                   <p className="text-center text-[#000] !mt-[1.8rem]">
-                    Don't have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <Link
                       href="/signup"
                       className="text-[#1c1c1c] hover:text-[#0062ff] font-bold underline"
