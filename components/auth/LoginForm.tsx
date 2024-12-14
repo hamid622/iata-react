@@ -4,6 +4,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import axios from "axios";
+
+import { useToast } from "@/hooks/use-toast";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,11 +16,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 const loginFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  keepmeloggedin: z.boolean().optional(),
 });
 
 const LoginForm = () => {
+  const { toast } = useToast();
+
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [disableButton, setDisableButton] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
@@ -31,10 +37,41 @@ const LoginForm = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    const { email, password } = values;
-    console.log({ email, password });
-    // form.reset();
+  async function onSubmit(values: z.infer<typeof loginFormSchema>) {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URI}/login`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (res.data?.status === true) {
+        toast({
+          title: "Login Successful",
+          description: "You have successfully logged in.",
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: res.data?.message,
+        });
+      }
+      console.log("login response", res.data);
+    } catch (error) {
+      console.log("login error", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -48,8 +85,8 @@ const LoginForm = () => {
                 Login to Account
               </h3>
               <p className="mb-4 text-center px-0 sm:px-2 md:px-9 lg:px-14">
-                Only for registered users. If you don&apos;t have an account, sign up
-                to create a new one.
+                Only for registered users. If you don&apos;t have an account,
+                sign up to create a new one.
               </p>
 
               <Form {...form}>
@@ -101,39 +138,38 @@ const LoginForm = () => {
                       {passwordVisible ? "Hide" : "Show"}
                     </span>
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="keepmeloggedin"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <FormControl>
-                              <Checkbox
-                                id="keepmeloggedin"
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                className=""
-                              />
-                            </FormControl>
-                            <Label
-                              htmlFor="keepmeloggedin"
-                              className="text-[#6f6f6f] text-sm"
-                            >
-                              Keep me logged in
-                            </Label>
-                          </div>
-                          <Link
-                            href="/forgot-password"
-                            className="text-sm font-medium text-[#1c1c1c] hover:text-[#0062ff] hover:underline"
-                          >
-                            Forgot Password
-                          </Link>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" variant="default" className="w-full">
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          id="keepmeloggedin"
+                          onCheckedChange={() =>
+                            setDisableButton((prev) => !prev)
+                          }
+                        />
+                      </FormControl>
+                      <Label
+                        htmlFor="keepmeloggedin"
+                        className="text-[#6f6f6f] text-sm"
+                      >
+                        Keep me logged in
+                      </Label>
+                    </div>
+                    <Link
+                      href="/forgot-password"
+                      className="text-sm font-medium text-[#1c1c1c] hover:text-[#0062ff] hover:underline"
+                    >
+                      Forgot Password
+                    </Link>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    variant="default"
+                    className="w-full"
+                    disabled={disableButton || loading}
+                  >
                     Login
                   </Button>
                   <Button
