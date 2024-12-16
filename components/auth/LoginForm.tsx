@@ -5,7 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
+import travelImg from "@/public/assets/travel.png";
 import { useToast } from "@/hooks/use-toast";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
@@ -20,6 +23,7 @@ const loginFormSchema = z.object({
 
 const LoginForm = () => {
   const { toast } = useToast();
+  const router = useRouter();
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
@@ -60,13 +64,14 @@ const LoginForm = () => {
           title: "Login Successful",
           description: "You have successfully logged in.",
         });
+        form.reset();
+        router.push("/dashboard");
       } else {
         toast({
           title: "Login Failed",
           description: res.data?.message,
         });
       }
-      console.log("login response", res.data);
     } catch (error) {
       console.log("login error", error);
     } finally {
@@ -92,7 +97,7 @@ const LoginForm = () => {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-3 lg:px-7 xl:px-14"
+                  className="space-y-3 lg:px-7 xl:px-[3rem]"
                 >
                   <FormField
                     control={form.control}
@@ -190,7 +195,7 @@ const LoginForm = () => {
                   </p>
                 </form>
               </Form>
-              <div className="flex items-center justify-center mt-10 md:mt-[0.7rem] lg:mt-[1.4rem] text-xs text-[#0062ff]">
+              <div className="flex items-center justify-center mt-10 md:mt-[0.7rem] lg:mt-[2.4rem] text-xs text-[#0062ff]">
                 <Link href="/privacy-policy">Privacy Policy</Link>
                 <span className="text-[#d8d8d8] py-0 px-[5px]">|</span>
                 <Link href="/terms-and-conditions">Terms and Conditions</Link>
@@ -215,8 +220,8 @@ const LoginForm = () => {
               </p>
             </div>
             <p className="text-[#0062ff] text-base font-bold">Let’s Do It</p>
-            <img
-              src="/assets/travel.png"
+            <Image
+              src={travelImg}
               alt="travel"
               className="max-w-full w-[50%] mt-12 mx-auto"
             />

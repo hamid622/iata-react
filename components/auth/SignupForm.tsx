@@ -112,8 +112,8 @@ const SignupForm = () => {
           title: "Signup successful",
           description: res.data.message,
         });
-        console.log("Signup successful:", res.data);
-
+        // console.log("Signup successful:", res.data);
+        form.reset();
         router.push("/login");
       } else {
         toast({
@@ -121,6 +121,7 @@ const SignupForm = () => {
           description: res.data.message,
         });
       }
+
     } catch (error) {
       console.error("Error signing up:", error);
       alert("An unexpected error occurred. Please try again later.");
